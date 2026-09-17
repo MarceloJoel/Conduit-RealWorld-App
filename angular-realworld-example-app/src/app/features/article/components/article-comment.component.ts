@@ -1,0 +1,76 @@
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  inject,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { UserService } from "../../../core/auth/services/user.service";
+import { User } from "../../../core/auth/user.model";
+import { RouterLink } from "@angular/router";
+import { map } from "rxjs/operators";
+import { Comment } from "../models/comment.model";
+import { AsyncPipe, DatePipe } from "@angular/common";
+
+@Component({
+  selector: "app-article-comment",
+  template: `
+    @if (comment) {
+      <div class="card">
+        <div class="card-block">
+          <p class="card-text">
+            {{ comment.body }}
+          </p>
+        </div>
+        <div class="card-footer">
+          <a
+            class="comment-author"
+            [routerLink]="['/profile', comment.author.username]"
+          >
+            @if (comment.author.image) {
+              <img
+                [src]="comment.author.image"
+                class="comment-author-img"
+                (error)="onImageError($event)"
+              />
+            } @else {
+              <img src="assets/default-avatar.jpg" class="comment-author-img" />
+            }
+          </a>
+          &nbsp;
+          <a
+            class="comment-author"
+            [routerLink]="['/profile', comment.author.username]"
+          >
+            {{ comment.author.username }}
+          </a>
+          <span class="date-posted">
+            {{ comment.createdAt | date: "longDate" }}
+          </span>
+          @if (canModify$ | async) {
+            <span class="mod-options">
+              <i class="ion-trash-a" (click)="deleteComment.emit(true)"></i>
+            </span>
+          }
+        </div>
+      </div>
+    }
+  `,
+  changeDetection: ChangeDetectionStrategy.Default,
+  imports: [RouterLink, DatePipe, AsyncPipe],
+})
+export class ArticleCommentComponent {
+  @Input() comment!: Comment;
+  onImageError(event: Event) {
+    (event.target as HTMLImageElement).src = "assets/default-avatar.jpg";
+  }
+  @Output() deleteComment = new EventEmitter<boolean>();
+
+  canModify$ = inject(UserService).currentUser.pipe(
+    map(
+      (userData: User | null) =>
+        userData?.username === this.comment.author.username,
+    ),
+  );
+}

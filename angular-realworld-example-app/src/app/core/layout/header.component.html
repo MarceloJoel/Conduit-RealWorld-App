@@ -1,0 +1,96 @@
+<nav class="navbar navbar-light">
+  <div class="container">
+    <a class="navbar-brand navbar-brand-custom" routerLink="/">
+      <img src="assets/logo.jpg" alt="Conduit" class="brand-logo" />
+      conduit
+    </a>
+
+    <!-- Show this for logged out users -->
+    <ul *ifAuthenticated="false" class="nav navbar-nav pull-xs-right">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/"> Home </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/login" routerLinkActive="active">
+          Sign in
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/register" routerLinkActive="active">
+          Sign up
+        </a>
+      </li>
+    </ul>
+
+    <!-- Show this for logged in users -->
+    <ul *ifAuthenticated="true" class="nav navbar-nav pull-xs-right">
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          routerLink="/"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          Home
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/editor" routerLinkActive="active">
+          <i class="ion-compose"></i>&nbsp;New Article
+        </a>
+      </li>
+
+      @if (currentUser$ | async; as currentUser) {
+        <li
+          class="nav-item dropdown dropdown-container"
+          [class.show]="isDropdownOpen"
+        >
+          <a
+            class="nav-link dropdown-toggle pointer-cursor"
+            (click)="toggleDropdown()"
+          >
+            @if (currentUser.image) {
+              <img
+                [src]="currentUser.image"
+                class="user-pic"
+                (error)="onImageError($event)"
+              />
+            } @else {
+              <img src="assets/default-avatar.jpg" class="user-pic" />
+            }
+            {{ currentUser.username }}
+          </a>
+          <div
+            class="dropdown-menu dropdown-menu-right dropdown-menu-custom"
+            [class.show]="isDropdownOpen"
+          >
+            <a
+              class="dropdown-item pointer-cursor"
+              [routerLink]="['/profile', currentUser.username]"
+              (click)="closeDropdown()"
+            >
+              My Profile & Posts
+            </a>
+            <a
+              class="dropdown-item pointer-cursor"
+              routerLink="/settings"
+              (click)="closeDropdown()"
+            >
+              Settings
+            </a>
+            <div class="dropdown-divider"></div>
+            <a
+              class="dropdown-item text-danger pointer-cursor logout-item"
+              (click)="logout()"
+            >
+              Log Out
+            </a>
+          </div>
+        </li>
+      }
+    </ul>
+  </div>
+</nav>

@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # Servicio de la Aplicación PHP
+  app:
+    build: .
+    ports:
+      - "8000:80"
+    volumes:
+    - .:/var/www/html
+    - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini 
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+    depends_on:
+      - db
+
+  # Servicio de la Base de Datos MySQL
+  db:
+    image: mysql:8.0
+    ports:
+      - "33066:3306" # Usamos el puerto 33066 
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - db-data:/var/lib/mysql
+
+volumes:
+  db-data:

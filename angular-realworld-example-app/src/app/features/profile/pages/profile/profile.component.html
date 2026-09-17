@@ -1,0 +1,78 @@
+@if (profile) {
+<div class="profile-page">
+  <div class="user-info">
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-md-10 offset-md-1">
+          @if (profile.image) {
+          <img [src]="profile.image" class="user-img" (error)="$any($event.target).src = 'assets/default-avatar.jpg'" />
+          } @else {
+          <img src="assets/default-avatar.jpg" class="user-img" />
+          }
+          <h4>{{ profile.username }}</h4>
+          <p>{{ profile.bio }}</p>
+
+          <!-- Agregamos Skills -->
+          <div class="tags-section">
+            <h6 class="tags-title">Skills</h6>
+            <ul class="tag-list pixel-tags">
+              @for (skill of profile.skills; track skill) {
+              <li class="tag-default tag-pill tag-outline pixel-tag">
+                {{ skill }}
+              </li>
+              }
+            </ul>
+          </div>
+
+          <!-- Agregamos Lenguaje -->
+          <div class="tags-section">
+            <h6 class="tags-title">Idiomas</h6>
+            <ul class="tag-list pixel-tags">
+              @for (language of profile.languages; track language) {
+              <li class="tag-default tag-pill tag-outline pixel-tag">
+                {{ language }}
+              </li>
+              }
+            </ul>
+          </div>
+
+          @if (!isUser) {
+          <app-follow-button [profile]="profile" (toggle)="onToggleFollowing($event)" />
+          }
+          @if (isUser) {
+          <a [routerLink]="['/settings']" class="btn btn-sm btn-outline-secondary action-btn">
+            <i class="ion-gear-a"></i> Edit Profile Settings
+          </a>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-md-10 offset-md-1">
+        <div class="articles-toggle">
+          <ul class="nav nav-pills outline-active">
+            <li class="nav-item">
+              <a class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+                [routerLink]="['/profile', profile.username]">
+                My Posts
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+                [routerLink]="['/profile', profile.username, 'favorites']">
+                Favorited Posts
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+    <!--modificado -->
+  </div>
+</div>
+}
